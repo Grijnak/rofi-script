@@ -32,13 +32,6 @@ actions = {
     'boot to bios': 'systemctl reboot --firmware-setup'
 }
 
-# arrows = ['\u2192', '\u27f6', '\u21e8', '\u2b95', '\u27a1', '\U0001f852',
-#         '\U0001f83a', '\U0001f846', '\U0001f83e', '\U0001f842', '\U0001f812',
-#         '\U0001f816', '\U0001f81a', '\U0001f81e', '\u2b62', '\U0001f802',
-#         '\U0001f806', '\U0001f80a', '\U0001f822', '\U0001f826', '\U0001f82a',
-#         '\U0001f82e', '\U0001f832', '\U0001f862', '\U0001f86a', '\U0001f872',
-#         '\U0001f87a', '\U0001f882', '\u21d2', '\u2794']
-
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print("\0prompt\x1fPower menu")
