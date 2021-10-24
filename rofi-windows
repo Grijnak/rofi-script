@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import subprocess
+import itertools
+import json
+
+
+def find_workspaces(container):
+    workspaces = []
+    for child in container['nodes']:
+        if child['type'] == 'workspace' and child['name'] != '__i3_scratch':
+            child['name'] = f'Workspace {child["name"]}'
+            workspaces.append((child['name'], walk_tree(child)))
+        else:
+            workspaces += find_workspaces(child)
+    return workspaces
+
+
+def walk_tree(container):
+    if container['name'] is None:
+        title = container['layout']  
+    else:
+        title = container['name'].replace("&", "&amp;")
+    if container['focused']:
+        title = f'<span style="oblique">{title}</span>'
+    titles = [f'{title}\0info\x1f[con_id="{container["id"]}"] focus']
+    for c in container['nodes']:
+        titles += [f'  {t}' for t in walk_tree(c)]
+    return titles
+
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        message = os.getenv('ROFI_INFO')
+        subprocess.run(('i3-msg', message), stdout=subprocess.DEVNULL)
+        sys.exit()
+
+    print('\0prompt\x1fWindow')
+    print('\0markup-rows\x1ftrue')
+
+    tree = subprocess.run(('i3-msg', '-t', 'get_tree'), stdout=subprocess.PIPE)
+    workspaces = find_workspaces(json.loads(tree.stdout))
+
+    workspaces.sort()
+    for workspace in workspaces:
+        print(*workspace[1], sep='\n')
+
