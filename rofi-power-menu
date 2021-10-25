@@ -1,43 +1,41 @@
-#!/usr/bin/env python3
+!/usr/bin/env python3
 
 import sys
 import os
 
-options = ('shutdown', 'sleep', 'hibernate', 'log out', 'reboot', 'boot to bios')
-
-text = {
-    'shutdown': 'Shut down',
-    'sleep': 'Sleep',
-    'hibernate': 'Hibernate',
-    'log out': 'Log out',
-    'reboot': 'Reboot',
-    'boot to bios': 'Boot to bios'
-}
-
-icons = {
-    'shutdown': '\u23fb',
-    'sleep': '\u23fe',
-    'hibernate': '\U0001f5b4',
-    'log out': '\U0001f872\u20de',
-    'reboot': '\u2b6e ',
-    'boot to bios': '\U0001f527\ufe0e'
-}
-
-actions = {
-    'shutdown': 'systemctl poweroff',
-    'sleep': 'systemctl suspend',
-    'hibernate': 'systemctl hibernate',
-    'log out': 'i3-msg exit',
-    'reboot': 'systemctl reboot',
-    'boot to bios': 'systemctl reboot --firmware-setup'
-}
+options = [
+   {
+       'text': 'Shut down',
+       'icon': '\u23fb',
+       'action': 'systemctl poweroff'
+   }, {
+       'text': 'Sleep',
+       'icon': '\u23fe',
+       'action': 'systemctl suspend'
+   }, {
+       'text': 'Hibernate',
+       'icon': '\U0001f5b4',
+       'action': 'systemctl hibernate'
+   }, {
+       'text': 'Reboot',
+       'icon': '\u2b6e ',
+       'action': 'systemctl reboot'
+   }, {
+      'text': 'Log out',
+       'icon': '\U0001f872\u20de',
+       'action': 'i3-msg exit'
+   }, {
+       'text': 'Boot to bios',
+       'icon': '\U0001f527\ufe0e',
+       'action': 'systemctl reboot --firmware-setup'
+   }
+]
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print("\0prompt\x1fPower menu")
         for option in options:
-            print(icons[option], text[option], '\0info\x1f', actions[option])
+            print(f'{option["icon"]} {option["text"]}\0info\x1f{option["action"]}')
     else:
         action = os.getenv('ROFI_INFO')
         os.system(action)
-
