@@ -1,41 +1,61 @@
-!/usr/bin/env python3
+#!/usr/bin/env python3
 
-import sys
 import os
 
-options = [
-   {
-       'text': 'Shut down',
-       'icon': '\u23fb',
-       'action': 'systemctl poweroff'
-   }, {
-       'text': 'Sleep',
-       'icon': '\u23fe',
-       'action': 'systemctl suspend'
-   }, {
-       'text': 'Hibernate',
-       'icon': '\U0001f5b4',
-       'action': 'systemctl hibernate'
-   }, {
-       'text': 'Reboot',
-       'icon': '\u2b6e ',
-       'action': 'systemctl reboot'
-   }, {
-      'text': 'Log out',
-       'icon': '\U0001f872\u20de',
-       'action': 'i3-msg exit'
-   }, {
-       'text': 'Boot to bios',
-       'icon': '\U0001f527\ufe0e',
-       'action': 'systemctl reboot --firmware-setup'
-   }
-]
+
+OPTIONS = {
+    'shutdown': {
+        'text': 'Shut down',
+        'icon': '\u23fb', # ⏻
+        'action': 'systemctl poweroff',
+        'confirm': True
+    },
+    'sleep': {
+        'text': 'Sleep',
+        'icon': '\u23fe', # ⏾
+        'action': 'systemctl suspend',
+        'confirm': False 
+    },
+    'hibernate': {
+        'text': 'Hibernate',
+        'icon': '\U0001f5b4', # 🖴
+        'action': 'systemctl hibernate',
+        'confirm': False 
+    },
+    'reboot': {
+        'text': 'Reboot',
+        'icon': '\u2b6e ', # ⭮
+        'action': 'systemctl reboot',
+        'confirm': True
+    },
+    'logout': {
+       'text': 'Log out',
+        'icon': '\U0001f872\u20de', # 🡲⃞
+        'action': 'i3-msg exit',
+        'confirm': True
+    },
+    'boot2bios': {
+        'text': 'Boot to bios',
+        'icon': '\U0001f527\ufe0e', # 🔧︎
+        'action': 'systemctl reboot --firmware-setup',
+        'confirm': True
+    }
+}
+
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
+    choice = os.getenv('ROFI_INFO')
+    if choice is None or not choice:
         print("\0prompt\x1fPower menu")
-        for option in options:
-            print(f'{option["icon"]} {option["text"]}\0info\x1f{option["action"]}')
+        for key, option in OPTIONS.items():
+            print(f'{option["icon"]} {option["text"]}\0info\x1f{key}')
     else:
-        action = os.getenv('ROFI_INFO')
-        os.system(action)
+        choice = choice.split(' ')
+        key = choice[0]
+        option = OPTIONS[key]
+        if option['confirm'] and len(choice) == 1:
+            print('\0prompt\x1fAre you sure?')
+            print(f'{option["icon"]} {option["text"]}\0info\x1f{key} confirm')
+            print('\U0001f5d9 Cancel\0info\x1f')
+        else:
+            os.system(option['action'])
